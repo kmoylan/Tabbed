@@ -1,0 +1,9 @@
+#appname:Tabbed1
+#appid:com.kemlab.tabbed1
+#type:mobile
+#guid:a51a420a-3dfd-4129-8fba-13b18f72393c
+#version:1.0
+#publisher:kmoylan
+#url:http://kemlabs.com
+#image:appicon.png
+#desc:Simple Tabbed App, hopefully with a button

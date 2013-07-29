@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<resources>
+	<string name="home">Home</string>	
+	<string name="settings">Settings</string>
+	<string name="openWindow">Open New Window</string>
+	<string name="newWindow">New Window</string>
+	<string name="timeCheck">Time Check</string>
+	<string name="viewEntries">View Em</string>
+	<string name="closeMe">Close me</string>
+	<string name="makeButtons">Make Some Buttons</string>
+</resources>
