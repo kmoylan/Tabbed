@@ -39,7 +39,7 @@ if (Ti.version < 1.8 ) {
 	new ApplicationTabGroup(Window).open();
 })();
 
-function makeMyWindow(title){
+function makeMyWindowView(title){
 		var win = Ti.UI.createWindow({
 		title:title,
 		backgroundColor:'white'

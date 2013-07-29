@@ -1,5 +1,5 @@
 function ApplicationWindow(title) {
-   win = makeMyWindow(title);
+   win = makeMyWindowView(title);
    return win;
 };
 
