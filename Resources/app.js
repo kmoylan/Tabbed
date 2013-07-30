@@ -87,9 +87,10 @@ function makeMyWindowView(title){
 		Ti.API.info(e.itemId + " finished at " + now);
 		
 		var item = e.section.getItemAt(e.itemIndex);
+		Ti.API.info(item);
         if (item.properties.accessoryType == Ti.UI.LIST_ACCESSORY_TYPE_NONE) {
             item.properties.accessoryType = Ti.UI.LIST_ACCESSORY_TYPE_CHECKMARK;
-            item.properties.title = 'Reset';
+            item.properties.color = 'gray';
         }
         else {
             item.properties.accessoryType = Ti.UI.LIST_ACCESSORY_TYPE_NONE;
@@ -116,25 +117,88 @@ function makeMyWindowView(title){
 	        template: Ti.UI.LIST_ITEM_TEMPLATE_CONTACTS
 	    }, 
 	];
-	json.boats.forEach(function(element, index, array) {
-			data.push({
-	        // Maps to the boatName component in the template
-	        // Sets the text property of the Label component
-	        boatName : { text: element.name },
-	       	sailNumber : { text: element.sailNumber },
+	
+	var aFleetSection = Ti.UI.createListSection({ headerTitle: 'A Fleet'});
+	var aFleetDataSet = []; 
+	var bFleetSection = Ti.UI.createListSection({ headerTitle: 'B Fleet'});
+	var bFleetDataSet = []; 
+	/**/
+	
 
-	        // Sets the regular list data properties
-	        properties : {
-	            itemId: element.sailNumber + "_" + element.name,
-	            accessoryType: Ti.UI.LIST_ACCESSORY_TYPE_NONE
-	        }
-	    });
+
+
+	
+	json.boats.forEach(function(element, index, array) {
+		if (element.class == 'A'){
+			aFleetDataSet.push({
+		        // Maps to the boatName component in the template
+		        // Sets the text property of the Label component
+		        boatName : { text: element.name },
+		       	sailNumber : { text: element.sailNumber },
+	
+		        // Sets the regular list data properties
+		        properties : {
+		            itemId: element.sailNumber + "_" + element.name,
+		            accessoryType: Ti.UI.LIST_ACCESSORY_TYPE_NONE
+		        }
+	    	});
+	   }
+	   if (element.class == 'B'){
+			bFleetDataSet.push({
+		        // Maps to the boatName component in the template
+		        // Sets the text property of the Label component
+		        boatName : { text: element.name },
+		       	sailNumber : { text: element.sailNumber },
+	
+		        // Sets the regular list data properties
+		        properties : {
+		            itemId: element.sailNumber + "_" + element.name,
+		            accessoryType: Ti.UI.LIST_ACCESSORY_TYPE_NONE
+		        }
+	    	});
+	   }
 	});
 	
-	var section = Ti.UI.createListSection({items: data});
-	listView.sections = [section];
+	var sections = [];
 
+	aFleetSection.setItems(aFleetDataSet);
+	sections.push(aFleetSection);
+	bFleetSection.setItems(bFleetDataSet);
+	sections.push(bFleetSection);
+	listView.sections = sections;
 	win.add(listView);
 	
+	var aFleetDistLabel = Titanium.UI.createLabel({
+	    text:'A Fleet Distance',
+	    left: 10 ,bottom : 30,
+	});
+	var aDistanceField = Ti.UI.createTextField({
+	  borderStyle: Ti.UI.INPUT_BORDERSTYLE_ROUNDED,
+	  color: '#336699',
+	  bottom: 30, left: 150,
+	  width: 50, height: 20,
+	});
+	aDistanceField.addEventListener('return', function(data) {
+		Ti.API.info("A Fleet Distance ="+data.source.value);
+	});
+	win.add(aFleetDistLabel);
+	win.add(aDistanceField);
+	
+	var bFleetDistLabel = Titanium.UI.createLabel({
+	    text:'B Fleet Distance',
+	    left: 10 ,bottom : 10,
+	});
+	var bDistanceField = Ti.UI.createTextField({
+	  borderStyle: Ti.UI.INPUT_BORDERSTYLE_ROUNDED,
+	  color: '#336699',
+	  bottom: 10, left: 150,
+	  width: 50, height: 20,
+	});
+	bDistanceField.addEventListener('return', function(data) {
+		Ti.API.info("B Fleet Distance ="+data.source.value);
+	});
+	win.add(bFleetDistLabel);
+	win.add(bDistanceField);
+
 	return win;
 }
