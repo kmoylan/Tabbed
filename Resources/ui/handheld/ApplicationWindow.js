@@ -1,5 +1,8 @@
 function ApplicationWindow(title) {
-	win = makeMyWindowView(title);
+	 var win = Ti.UI.createWindow({
+		title:title,
+		backgroundColor:'white'
+	});
    return win;
 
 };
