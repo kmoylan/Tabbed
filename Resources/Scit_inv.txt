@@ -1,0 +1,144 @@
+{
+	"regattaName" : "Scituate Invitational",
+	"boats" : [
+		{
+                "name" : "Cone of Silence",
+                "fleet": "A",
+                "sailNumber" : "19",
+                "raceRating" : "6",
+                "cruiseRating" : "78",
+                "r_c": "r"
+                },
+		{
+                "name" : "Scherherazade",
+                "fleet": "A",
+                "sailNumber" : "39512",
+                "raceRating" : "39",
+                "cruiseRating" : "",
+                "r_c": "r"
+                },
+		{
+                "name" : "Katabatic",
+                "fleet": "A",
+                "sailNumber" : "9393",
+                "raceRating" : "45",
+                "cruiseRating" : "",
+                "r_c": "r"
+                },
+		{
+                "name" : "Langosta",
+                "fleet": "A",
+                "sailNumber" : "51758",
+                "raceRating" : "45",
+                "cruiseRating" : "",
+                "r_c": "r"
+                },
+		{
+		"name" : "Superstition THE BEST",
+		"fleet": "B",
+		"sailNumber" : "171",
+		"raceRating" : "66",
+		"cruiseRating" : "78",
+		"r_c": "r"
+		},
+		{
+		"name" : "Heat Wave",
+		"fleet": "B",
+		"sailNumber" : "144",
+		"raceRating" : "66",
+		"cruiseRating" : "78",
+		"r_c": "r"
+		},
+		{
+		"name" : "It Wasn't Me",
+		"fleet": "B",
+		"sailNumber" : "51458",
+		"raceRating" : "90",
+		"cruiseRating" : "96",
+		"r_c": "r"
+		},
+		{
+		"name" : "Agora",
+		"fleet": "B",
+		"sailNumber" : "52475",
+		"raceRating" : "72",
+		"cruiseRating" : "87",
+		"r_c": "r"
+		},
+		{
+		"name" : "Cuckoo's Nest",
+		"fleet": "B",
+		"sailNumber" : "42383",
+		"raceRating" : "90",
+		"cruiseRating" : "105",
+		"r_c": "r"
+		},
+		{
+		"name" : "Thor's Hammer",
+                "fleet": "C",
+                "sailNumber" : "111",
+                "raceRating" : "66",
+                "cruiseRating" : "78",
+                "r_c": "r"
+                },
+                {
+                "name" : "Blind Squirrel",
+                "fleet": "C",
+                "sailNumber" : "222",
+                "raceRating" : "66",
+                "cruiseRating" : "78",
+                "r_c": "r"
+                },
+                {
+                "name" : "Ogi's Dream",
+                "fleet": "C",
+                "sailNumber" : "333",
+                "raceRating" : "90",
+                "cruiseRating" : "96",
+                "r_c": "r"
+                },
+                {
+                "name" : "BabyCAKES",
+                "fleet": "C",
+                "sailNumber" : "444",
+                "raceRating" : "72",
+                "cruiseRating" : "87",
+                "r_c": "r"
+                },
+                {
+                "name" : "Zorro",
+                "fleet": "C",
+                "sailNumber" : "555",
+                "raceRating" : "90",
+                "cruiseRating" : "105",
+                "r_c": "r"
+                },
+		{
+                "name" : "SlowBoat2",
+                "fleet": "F",
+                "sailNumber" : "777",
+                "raceRating" : "9",
+                "cruiseRating" : "105",
+                "r_c": "c"
+                },
+
+		{
+                "name" : "SlowBoat1",
+                "fleet": "F",
+                "sailNumber" : "888",
+                "raceRating" : "15",
+                "cruiseRating" : "100",
+                "r_c": "c"
+                },
+
+		{
+                "name" : "SlowBoat3",
+                "fleet": "F",
+                "sailNumber" : "999",
+                "raceRating" : "-3",
+                "cruiseRating" : "106",
+                "r_c": "c"
+                }
+
+	]
+}
