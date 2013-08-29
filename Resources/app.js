@@ -44,6 +44,27 @@ var fleets = new Array();
 	var ApplicationTabGroup = require('ui/common/ApplicationTabGroup');
 	new ApplicationTabGroup(Window).open();
 })();
+function makeInitPage(title){
+	
+	var win = Ti.UI.createWindow({
+		title:title,
+		backgroundColor:'white'
+	});
+	var theHTML;
+	var h;
+	
+	c = Titanium.Network.createHTTPClient();
+    c.open('GET', 'http://www.regattaman.com/scratch.php?yr=2013&race_id=71&cancel_dest=def_event_page.php');
+    c.onload = function()
+	{
+	    //label1.text= this.responseText;
+	    theHTML=this.responseText;
+	};    
+	c.send();
+    //var dom = Titanium.XML.parseString(theHTML);
+    Ti.API.info(c.responseText);
+    return win;
+};
 
 function makeScratchSheetView(title){
 	
