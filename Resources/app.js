@@ -52,20 +52,188 @@ function makeInitPage(title){
 	});
 	var theHTML;
 	var h;
+	var raceId;
+	var raceName;
 	
+	var buttonLoadScratch = Ti.UI.createButton({
+		height:44,
+		width:400,
+		title:L('Load Scratch Sheet'),
+		top:150,
+		left : 10
+	});
+	buttonLoadScratch.addEventListener('click', function() {
 	c = Titanium.Network.createHTTPClient();
-    c.open('GET', 'http://www.regattaman.com/scratch.php?yr=2013&race_id=71&cancel_dest=def_event_page.php');
+	url = 'http://www.regattaman.com/scratch.php?yr=2013&race_id=' + raceId + '&cancel_dest=def_event_page.php';
+	Ti.API.info('url = ' + url);
+    c.open('GET', url);
     c.onload = function()
 	{
 	    //label1.text= this.responseText;
 	    theHTML=this.responseText;
+	    //parse out the scratch sheet, then build the json file to be read by the scratchSheet window
+	    /**
+	     * The HTML looks like this :
+	     * <table class = scratch ...>
+	     *   <tr> 
+	     *     <td class=fleet1 ....>  -- This is a new fleet
+	     *   </tr>
+	     *     <tr>  -- New Boat Data
+	     * 	     <td> -- fleet
+	     * 	     <td> -- skipper
+	     * 	     <td> -- boat name
+	     * 	     <td> -- yacht club
+	     * 	     <td> -- sail number
+	     * 	     <td> -- boat type
+	     * 	     <td> --  Rating
+	     * 	     <td> -- race rating
+	     * 	     <td> -- cruise rating
+	     * 	     <td> -- R/C
+	     *    </tr>
+	     *    <tr> -- New boat
+	     * 	  <tr> -- New Boat
+	     *    <tr class=fleet1> -- New Fleet
+	     */
+	     //Ti.API.info(theHTML);
+	     
+	     Ti.include('htmlparser.js');
+	     Ti.include('soupselect.js');
+	     
+	    var select = soupselect.select;
+		var handler = new htmlparser.DefaultHandler(function(err, dom) {
+			if (err) {
+				alert('Error: ' + err);
+			} else {
+				/*
+				var img = select(dom, 'img');
+		 
+				img.forEach(function(img) {
+					alert('src: ' + img.attribs.src);
+				});
+				*/
+		 		//get all the TDs into an array
+				var rows = select(dom, 'td');
+		 		var i = 0;
+		 		var boats = new Array();
+		 		var myBoat = {}; 
+				rows.forEach(function(row) {
+					rowData = row.children[0].data;
+					
+					Ti.API.info(i + ' ' + rowData);
+					//build a boat, then push it to the boats array
+					if (0 == i%10){
+						//build a new boat, and store it's fleet
+						myBoat = {};
+						myBoat.fleet = rowData;
+					} else {
+						//add the rest of the stuff to the boat
+						iString = i.toString();
+						if (endsWith(iString, '1')){
+							myBoat.skipper = rowData;
+						}
+						if (endsWith(iString, '2')){
+							//myBoat.push({'name': rowData});
+							myBoat.name = rowData;
+						}
+						if (endsWith(iString, '3')){
+							myBoat.town = rowData;
+						}
+						if (endsWith(iString, '4')){
+							myBoat.sailNumber = rowData;
+						}
+						if (endsWith(iString, '5')){
+							myBoat.boatType =rowData;
+						}
+						if (endsWith(iString, '6')){
+							myBoat.rating =rowData;
+						}
+						if (endsWith(iString, '7')){
+							myBoat.raceRating =rowData;
+						}
+						if (endsWith(iString, '8')){
+							myBoat.cruiseRating = rowData;
+						}
+						if (endsWith(iString, '9')){
+							myBoat.r_c =rowData;
+							boats.push(myBoat);
+						}
+					}
+					i++;
+				});
+				Ti.API.info('All Boats = ' + JSON.stringify(boats));
+				jsonOut = {};
+				jsonOut.regattaName = raceName;
+				jsonOut.boats = boats;
+				Ti.API.info('jSon = ' + JSON.stringify(jsonOut));
+				
+				var f = Ti.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory,'testOut.txt');
+				//f.write(JSON.stringify(jsonOut));
+				if(!f.write(JSON.stringify(jsonOut))) {
+					Ti.API.info("could not write string to file.");
+				}
+				else {
+					Ti.API.info("Wrote a file with " + f.size + " at " + f.resolve());
+				}
+			}
+		});
+	 
+	var parser = new htmlparser.Parser(handler);
+	parser.parseComplete(theHTML);
+	     
 	};    
 	c.send();
+	});
+	var raceIdField = Ti.UI.createTextField({
+	  borderStyle: Ti.UI.INPUT_BORDERSTYLE_ROUNDED,
+	  hintText: 'race Id',
+	  color: '#336699',
+	  top: 50, left: 150,
+	  width: 150, height: 20,
+	});
+	var raceIdLabel = Titanium.UI.createLabel({
+	    text:L('Race Id'),
+	    left: 10 ,top : 50,
+	});
+	raceIdField.addEventListener('change', function(data) {
+		if (isNaN(Number(data.source.value))){
+			data.source.value = 0;
+		}
+		raceId = data.source.value;
+	});
+	
+	var raceNameField = Ti.UI.createTextField({
+	  borderStyle: Ti.UI.INPUT_BORDERSTYLE_ROUNDED,
+	  hintText: 'Race Name',
+	  color: '#336699',
+	  top: 10, left: 150,
+	  width: 150, height: 20,
+	});
+	var raceNameLabel = Titanium.UI.createLabel({
+	    text:L('Race Name'),
+	    left: 10 ,top : 10,
+	});
+	raceNameField.addEventListener('change', function(data) {
+
+		raceName = data.source.value;
+	});
+	
     //var dom = Titanium.XML.parseString(theHTML);
-    Ti.API.info(c.responseText);
+    win.add(buttonLoadScratch);
+	win.add(raceIdField);
+	win.add(raceIdLabel);
+	win.add(raceNameField);
+	win.add(raceNameLabel);
+   
     return win;
 };
 
+function jsonObject()
+{
+};
+
+function endsWith(str, suffix) {
+    return str.indexOf(suffix, str.length - suffix.length) !== -1;
+}
 function makeScratchSheetView(title){
 	
 	var win = Ti.UI.createWindow({
@@ -92,7 +260,9 @@ function makeScratchSheetView(title){
 	
 	//read in the scratch sheet, for now from a text file from the resources folder.
 	//var f = Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory,'Scit_inv.txt');
-	var f = Ti.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory,'Scit_inv.txt');
+	//var f = Ti.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory,'Scit_inv.txt');
+	var f = Ti.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory,'testOut.txt');
+
 	var contents = f.read();
 	json = JSON.parse(contents.text);
 	//sort it by handicap

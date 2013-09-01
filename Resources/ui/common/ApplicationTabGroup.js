@@ -5,7 +5,7 @@ function ApplicationTabGroup(Window) {
 	//create app tabs
 	var //win1 = new Window(L('home')),
 	win1 = new Window(L('StartPage'));
-	win2= makeScratchSheetView(L('ScratchSheet')); 
+	win2 = makeScratchSheetView(L('ScratchSheet')); 
 	win3 = makeInitPage(L('Init Page'));
 	
 	var tab1 = Ti.UI.createTab({
@@ -27,10 +27,11 @@ function ApplicationTabGroup(Window) {
 		window: win3
 	});
 	win3.containingTab = tab3;
-	
+
+	self.addTab(tab3);	
 	self.addTab(tab1);
 	self.addTab(tab2);
-	self.addTab(tab3);
+
 
 	//lets try this with a scrollable section
 	//make the template

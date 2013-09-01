@@ -132,7 +132,7 @@
                 },
 
 		{
-                "name" : "SlowBoat3",
+                "name" : "SlowBoat3 REALLY?",
                 "fleet": "F",
                 "sailNumber" : "999",
                 "raceRating" : "-3",
