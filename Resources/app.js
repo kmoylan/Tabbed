@@ -19,6 +19,7 @@ var startTimes = new Array();
 var distances = new Array();
 var fleetScratchData = new Array();
 var fleets = new Array();
+var tabGroup = Ti.UI.createTabGroup();
 
 // This is a single context application with mutliple windows in a stack
 (function() {
@@ -44,6 +45,10 @@ var fleets = new Array();
 	var ApplicationTabGroup = require('ui/common/ApplicationTabGroup');
 	new ApplicationTabGroup(Window).open();
 })();
+/**
+ * what about adding the scratchSheet widget on this page once you click the button?
+ * Have MakeScratchSheet return the listView instead of the window and then add the listView to this win
+ */
 function makeInitPage(title){
 	
 	var win = Ti.UI.createWindow({
@@ -54,7 +59,7 @@ function makeInitPage(title){
 	var h;
 	var raceId;
 	var raceName;
-	
+		
 	var buttonLoadScratch = Ti.UI.createButton({
 		height:44,
 		width:400,
@@ -63,126 +68,131 @@ function makeInitPage(title){
 		left : 10
 	});
 	buttonLoadScratch.addEventListener('click', function() {
-	c = Titanium.Network.createHTTPClient();
-	url = 'http://www.regattaman.com/scratch.php?yr=2013&race_id=' + raceId + '&cancel_dest=def_event_page.php';
-	Ti.API.info('url = ' + url);
-    c.open('GET', url);
-    c.onload = function()
-	{
-	    //label1.text= this.responseText;
-	    theHTML=this.responseText;
-	    //parse out the scratch sheet, then build the json file to be read by the scratchSheet window
-	    /**
-	     * The HTML looks like this :
-	     * <table class = scratch ...>
-	     *   <tr> 
-	     *     <td class=fleet1 ....>  -- This is a new fleet
-	     *   </tr>
-	     *     <tr>  -- New Boat Data
-	     * 	     <td> -- fleet
-	     * 	     <td> -- skipper
-	     * 	     <td> -- boat name
-	     * 	     <td> -- yacht club
-	     * 	     <td> -- sail number
-	     * 	     <td> -- boat type
-	     * 	     <td> --  Rating
-	     * 	     <td> -- race rating
-	     * 	     <td> -- cruise rating
-	     * 	     <td> -- R/C
-	     *    </tr>
-	     *    <tr> -- New boat
-	     * 	  <tr> -- New Boat
-	     *    <tr class=fleet1> -- New Fleet
-	     */
-	     //Ti.API.info(theHTML);
-	     
-	     Ti.include('htmlparser.js');
-	     Ti.include('soupselect.js');
-	     
-	    var select = soupselect.select;
-		var handler = new htmlparser.DefaultHandler(function(err, dom) {
-			if (err) {
-				alert('Error: ' + err);
-			} else {
-				/*
-				var img = select(dom, 'img');
-		 
-				img.forEach(function(img) {
-					alert('src: ' + img.attribs.src);
-				});
-				*/
-		 		//get all the TDs into an array
-				var rows = select(dom, 'td');
-		 		var i = 0;
-		 		var boats = new Array();
-		 		var myBoat = {}; 
-				rows.forEach(function(row) {
-					rowData = row.children[0].data;
-					
-					Ti.API.info(i + ' ' + rowData);
-					//build a boat, then push it to the boats array
-					if (0 == i%10){
-						//build a new boat, and store it's fleet
-						myBoat = {};
-						myBoat.fleet = rowData;
+		c = Titanium.Network.createHTTPClient();
+		url = 'http://www.regattaman.com/scratch.php?yr=2013&race_id=' + raceId + '&cancel_dest=def_event_page.php';
+		Ti.API.info('url = ' + url);
+		
+	    c.open('GET', url);
+	    c.onload = function()
+			{
+			    //label1.text= this.responseText;
+			    theHTML=this.responseText;
+			    //parse out the scratch sheet, then build the json file to be read by the scratchSheet window
+			    /**
+			     * The HTML looks like this :
+			     * <table class = scratch ...>
+			     *   <tr> 
+			     *     <td class=fleet1 ....>  -- This is a new fleet
+			     *   </tr>
+			     *     <tr>  -- New Boat Data
+			     * 	     <td> -- fleet
+			     * 	     <td> -- skipper
+			     * 	     <td> -- boat name
+			     * 	     <td> -- yacht club
+			     * 	     <td> -- sail number
+			     * 	     <td> -- boat type
+			     * 	     <td> --  Rating
+			     * 	     <td> -- race rating
+			     * 	     <td> -- cruise rating
+			     * 	     <td> -- R/C
+			     *    </tr>
+			     *    <tr> -- New boat
+			     * 	  <tr> -- New Boat
+			     *    <tr class=fleet1> -- New Fleet
+			     */
+			     //Ti.API.info(theHTML);
+			     
+			    Ti.include('htmlparser.js');
+			    Ti.include('soupselect.js');
+			     
+			    var select = soupselect.select;
+				var handler = new htmlparser.DefaultHandler(function(err, dom) {
+					if (err) {
+						alert('Error: ' + err);
 					} else {
-						//add the rest of the stuff to the boat
-						iString = i.toString();
-						if (endsWith(iString, '1')){
-							myBoat.skipper = rowData;
+						/*
+						var img = select(dom, 'img');
+				 
+						img.forEach(function(img) {
+							alert('src: ' + img.attribs.src);
+						});
+						*/
+				 		//get all the TDs into an array
+						var rows = select(dom, 'td');
+				 		var i = 0;
+				 		var boats = new Array();
+				 		var myBoat = {}; 
+						rows.forEach(function(row) {
+							rowData = row.children[0].data;
+							
+							//Ti.API.info(i + ' ' + rowData);
+							//build a boat, then push it to the boats array
+							if (0 == i%10){
+								//build a new boat, and store it's fleet
+								myBoat = {};
+								myBoat.fleet = rowData;
+							} else {
+								//add the rest of the stuff to the boat
+								iString = i.toString();
+								if (endsWith(iString, '1')){
+									myBoat.skipper = rowData;
+								}
+								if (endsWith(iString, '2')){
+									myBoat.name = rowData;
+								}
+								if (endsWith(iString, '3')){
+									myBoat.town = rowData;
+								}
+								if (endsWith(iString, '4')){
+									myBoat.sailNumber = rowData;
+								}
+								if (endsWith(iString, '5')){
+									myBoat.boatType =rowData;
+								}
+								if (endsWith(iString, '6')){
+									myBoat.rating =rowData;
+								}
+								if (endsWith(iString, '7')){
+									myBoat.raceRating =rowData;
+								}
+								if (endsWith(iString, '8')){
+									myBoat.cruiseRating = rowData;
+								}
+								if (endsWith(iString, '9')){
+									myBoat.r_c =rowData;
+									//and add the boat to the list of boats
+									boats.push(myBoat);
+								}
+							}
+							i++;
+						});
+						Ti.API.info('All Boats = ' + JSON.stringify(boats));
+						var jsonOut = {};
+						jsonOut.regattaName = raceName;
+						jsonOut.boats = boats;
+						Ti.API.info('jSon = ' + JSON.stringify(jsonOut));
+						
+						scratchListView = makeScratchSheetView(jsonOut);
+						win.add(scratchListView);
+						
+						var f = Ti.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory,'testOut.txt');
+						if(!f.write(JSON.stringify(jsonOut))) {
+							Ti.API.info("could not write string to file.");
 						}
-						if (endsWith(iString, '2')){
-							//myBoat.push({'name': rowData});
-							myBoat.name = rowData;
-						}
-						if (endsWith(iString, '3')){
-							myBoat.town = rowData;
-						}
-						if (endsWith(iString, '4')){
-							myBoat.sailNumber = rowData;
-						}
-						if (endsWith(iString, '5')){
-							myBoat.boatType =rowData;
-						}
-						if (endsWith(iString, '6')){
-							myBoat.rating =rowData;
-						}
-						if (endsWith(iString, '7')){
-							myBoat.raceRating =rowData;
-						}
-						if (endsWith(iString, '8')){
-							myBoat.cruiseRating = rowData;
-						}
-						if (endsWith(iString, '9')){
-							myBoat.r_c =rowData;
-							boats.push(myBoat);
+						else {
+							Ti.API.info("Wrote a file with " + f.size + " at " + f.resolve());
 						}
 					}
-					i++;
 				});
-				Ti.API.info('All Boats = ' + JSON.stringify(boats));
-				jsonOut = {};
-				jsonOut.regattaName = raceName;
-				jsonOut.boats = boats;
-				Ti.API.info('jSon = ' + JSON.stringify(jsonOut));
-				
-				var f = Ti.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory,'testOut.txt');
-				//f.write(JSON.stringify(jsonOut));
-				if(!f.write(JSON.stringify(jsonOut))) {
-					Ti.API.info("could not write string to file.");
-				}
-				else {
-					Ti.API.info("Wrote a file with " + f.size + " at " + f.resolve());
-				}
-			}
-		});
-	 
-	var parser = new htmlparser.Parser(handler);
-	parser.parseComplete(theHTML);
-	     
-	};    
-	c.send();
+			 
+				var parser = new htmlparser.Parser(handler);
+				parser.parseComplete(theHTML);
+			     
+			};
+		c.send();
+		
 	});
+	
 	var raceIdField = Ti.UI.createTextField({
 	  borderStyle: Ti.UI.INPUT_BORDERSTYLE_ROUNDED,
 	  hintText: 'race Id',
@@ -234,12 +244,13 @@ function jsonObject()
 function endsWith(str, suffix) {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
 }
-function makeScratchSheetView(title){
-	
+function makeScratchSheetView(json){
+	/**
 	var win = Ti.UI.createWindow({
 		title:title,
 		backgroundColor:'white'
 	});
+	**/
 
 	var aFleetData = [];
 	var bFleetData = [];
@@ -261,10 +272,12 @@ function makeScratchSheetView(title){
 	//read in the scratch sheet, for now from a text file from the resources folder.
 	//var f = Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory,'Scit_inv.txt');
 	//var f = Ti.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory,'Scit_inv.txt');
+	/**
 	var f = Ti.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory,'testOut.txt');
 
 	var contents = f.read();
 	json = JSON.parse(contents.text);
+	**/
 	//sort it by handicap
 	json.boats.sort(compare_boats_by_handicap);
 		
@@ -506,9 +519,9 @@ function makeScratchSheetView(title){
 	//add the sections to the window
 	
 	listView.sections = sections;
-	win.add(listView);
+	//win.add(listView);
 
-	return win;
+	return listView;
 }
 
 
