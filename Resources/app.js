@@ -20,20 +20,21 @@ var distances = new Array();
 var fleetScratchData = new Array();
 var fleets = new Array();
 var tabGroup = Ti.UI.createTabGroup();
+var win1;
 
 // This is a single context application with mutliple windows in a stack
 (function() {
-	
+
 	//determine platform and form factor and render approproate components
 	var osname = Ti.Platform.osname,
 		version = Ti.Platform.version,
 		height = Ti.Platform.displayCaps.platformHeight,
 		width = Ti.Platform.displayCaps.platformWidth;
-	
+
 	//considering tablet to have one dimension over 900px - this is imperfect, so you should feel free to decide
 	//yourself what you consider a tablet form factor for android
 	var isTablet = osname === 'ipad' || (osname === 'android' && (width > 899 || height > 899));
-	
+
 	var Window;
 	if (isTablet) {
 		Window = require('ui/tablet/ApplicationWindow');
@@ -41,7 +42,7 @@ var tabGroup = Ti.UI.createTabGroup();
 	else {
 		Window = require('ui/handheld/ApplicationWindow');
 	}
-	
+	win1 = new Window(L('StartPage'));
 	var ApplicationTabGroup = require('ui/common/ApplicationTabGroup');
 	new ApplicationTabGroup(Window).open();
 })();
@@ -50,7 +51,7 @@ var tabGroup = Ti.UI.createTabGroup();
  * Have MakeScratchSheet return the listView instead of the window and then add the listView to this win
  */
 function makeInitPage(title){
-	
+
 	var win = Ti.UI.createWindow({
 		title:title,
 		backgroundColor:'white'
@@ -59,7 +60,7 @@ function makeInitPage(title){
 	var h;
 	var raceId;
 	var raceName;
-		
+
 	var buttonLoadScratch = Ti.UI.createButton({
 		height:44,
 		width:400,
@@ -71,7 +72,7 @@ function makeInitPage(title){
 		c = Titanium.Network.createHTTPClient();
 		url = 'http://www.regattaman.com/scratch.php?yr=2013&race_id=' + raceId + '&cancel_dest=def_event_page.php';
 		Ti.API.info('url = ' + url);
-		
+
 	    c.open('GET', url);
 	    c.onload = function()
 			{
@@ -101,10 +102,10 @@ function makeInitPage(title){
 			     *    <tr class=fleet1> -- New Fleet
 			     */
 			     //Ti.API.info(theHTML);
-			     
+
 			    Ti.include('htmlparser.js');
 			    Ti.include('soupselect.js');
-			     
+
 			    var select = soupselect.select;
 				var handler = new htmlparser.DefaultHandler(function(err, dom) {
 					if (err) {
@@ -124,7 +125,7 @@ function makeInitPage(title){
 				 		var myBoat = {}; 
 						rows.forEach(function(row) {
 							rowData = row.children[0].data;
-							
+
 							//Ti.API.info(i + ' ' + rowData);
 							//build a boat, then push it to the boats array
 							if (0 == i%10){
@@ -171,9 +172,11 @@ function makeInitPage(title){
 						jsonOut.regattaName = raceName;
 						jsonOut.boats = boats;
 						Ti.API.info('jSon = ' + JSON.stringify(jsonOut));
-						
+
 						scratchListView = makeScratchSheetView(jsonOut);
 						win.add(scratchListView);
+
+						makeStartPage();
 						
 						var f = Ti.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory,'testOut.txt');
 						if(!f.write(JSON.stringify(jsonOut))) {
@@ -184,15 +187,15 @@ function makeInitPage(title){
 						}
 					}
 				});
-			 
+
 				var parser = new htmlparser.Parser(handler);
 				parser.parseComplete(theHTML);
-			     
+
 			};
 		c.send();
-		
+
 	});
-	
+
 	var raceIdField = Ti.UI.createTextField({
 	  borderStyle: Ti.UI.INPUT_BORDERSTYLE_ROUNDED,
 	  hintText: 'race Id',
@@ -210,7 +213,7 @@ function makeInitPage(title){
 		}
 		raceId = data.source.value;
 	});
-	
+
 	var raceNameField = Ti.UI.createTextField({
 	  borderStyle: Ti.UI.INPUT_BORDERSTYLE_ROUNDED,
 	  hintText: 'Race Name',
@@ -226,7 +229,7 @@ function makeInitPage(title){
 
 		raceName = data.source.value;
 	});
-	
+
     //var dom = Titanium.XML.parseString(theHTML);
     win.add(buttonLoadScratch);
 	win.add(raceIdField);
@@ -259,7 +262,7 @@ function makeScratchSheetView(json){
 	var eFleetData = [];
 	var fFleetData = [];
 	var gFleetData = [];
-	
+
 	var aFleetStarted = false;
 	var bFleetStarted = false;
 	var cFleetStarted = false;
@@ -268,7 +271,7 @@ function makeScratchSheetView(json){
 	var fFleetStarted = false;
 	var gFleetStarted = false;
 
-	
+
 	//read in the scratch sheet, for now from a text file from the resources folder.
 	//var f = Ti.Filesystem.getFile(Ti.Filesystem.applicationDataDirectory,'Scit_inv.txt');
 	//var f = Ti.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory,'Scit_inv.txt');
@@ -280,7 +283,7 @@ function makeScratchSheetView(json){
 	**/
 	//sort it by handicap
 	json.boats.sort(compare_boats_by_handicap);
-		
+
 	//make the template
 	var plainTemplate = {
 	    childTemplates: [
@@ -298,7 +301,7 @@ function makeScratchSheetView(json){
 	                left: '100dp'
 	            }
 	        },
-	                         
+
 	        {
 	            type: 'Ti.UI.Button',   // Use a button
 	            bindId: 'button',       // Bind ID for this button
@@ -435,12 +438,12 @@ function makeScratchSheetView(json){
 										 'totalTime' : toc,
 										 'correctedTime':correctedToc});
 						break;
-					
+
 				}
 
 				//write a record to the file, not sure if we want this or not.
 				log.write(boat.name + " : " + now + " : " + toc + " : " + correctedToc + "\n", true);
-				
+
 				Ti.API.info('A fleet data = ' + JSON.stringify(aFleetData));
 				Ti.API.info('B fleet data = ' + JSON.stringify(bFleetData));
 			}
@@ -455,7 +458,7 @@ function makeScratchSheetView(json){
         }
         e.section.updateItemAt(e.itemIndex, item);
 	}
-	
+
 	var listView = Ti.UI.createListView({
 	    // Maps the plainTemplate object to the 'plain' style name
 	    templates: { 'plain': plainTemplate },
@@ -463,7 +466,7 @@ function makeScratchSheetView(json){
 	    // for all data list items in this list view
 	    defaultItemTemplate: 'plain'               
 	});
-	
+
 	var data = [];
 	data = [
 	    {
@@ -476,10 +479,10 @@ function makeScratchSheetView(json){
 	        template: Ti.UI.LIST_ITEM_TEMPLATE_CONTACTS
 	    }, 
 	];
-	
-		
+
+
 	var allFleetDataSet = [];
-	
+
 	json.boats.forEach(function(element, index, array) {
 		//create the fleets array so we know how many fleets are in the regatta
 		//this will be used to make sections on the finish page, and to make the start page
@@ -500,7 +503,7 @@ function makeScratchSheetView(json){
 	        fleet : {text: element.fleet}
     	});
 
-		
+
 	});
 
 	var sections = [];
@@ -517,7 +520,7 @@ function makeScratchSheetView(json){
 		fleetDataSet = [];
 	});
 	//add the sections to the window
-	
+
 	listView.sections = sections;
 	//win.add(listView);
 
@@ -539,9 +542,116 @@ function compare_boats_by_handicap(boat1, boat2){
 		    return 1;
 		}
 	}
-	
+
   return 0;
 }
+
+function makeStartPage(){
+		//lets try this with a scrollable section
+	//make the template
+	var startPageTemplate = {
+	      childTemplates: [
+	    	{
+	            type: 'Ti.UI.Label', // Use a label
+	            bindId: 'fleetName',  // Bind ID for this label
+	            properties: {        // Sets the Label.left property
+	                left: '10dp'
+	            }
+	        }, 
+	        {
+	            type: 'Ti.UI.Label', // Use a label
+	            bindId: 'fleetDistLabel',  // Bind ID for this label
+	            properties: {        // Sets the Label.left property
+	                left: '100dp'
+	            }
+	        }, 
+	        {
+	            type: 'Ti.UI.TextField', // Use a textField
+	            bindId: 'distance',  // Bind ID for this field
+	            properties: {        // Sets the field  properties
+	             	left: '180dp',
+	             	borderStyle: Ti.UI.INPUT_BORDERSTYLE_ROUNDED,
+			 	 	color: '#336699',
+	  				width: 30, height: 20,
+	            },
+	            events : { 'return' : saveDistance}
+	        },                
+	        {
+	            type: 'Ti.UI.Button',   // Use a button
+	            bindId: 'startButton',       // Bind ID for this button
+	            properties: {           // Sets several button properties
+	                width: '80dp',
+	                height: '30dp',                        	
+	                right: '10dp',
+	                title: 'Start'
+	            },
+	            events: { 'click' : startFleet }  // Binds a callback to the button's click event
+	        }
+	    ]
+	};
+
+	var listView = Ti.UI.createListView({
+	    // Maps the plainTemplate object to the 'plain' style name
+	    templates: { 'plain': startPageTemplate },
+	    // Use the plain template, that is, the plainTemplate object defined earlier
+	    // for all data list items in this list view
+	    defaultItemTemplate: 'plain'               
+	});
+
+	//build the data set.  the fleets were dynamically created when we read in the boats
+	var fleetSection = Ti.UI.createListSection({ headerTitle: 'Fleet'});
+	var fleetDataSet = []; 	
+	fleets.forEach(function(element, index, array) {
+		fleetDataSet.push({
+	        // Maps to the fleet component in the template
+	        fleetName : { text: "Fleet " + element },
+	        fleetDistLabel : {text : element + " Distance"},
+	       	distance : {
+	            itemId: element + "_distance",
+	            accessoryType: Ti.UI.LIST_ACCESSORY_TYPE_NONE
+	        },
+	        // Sets the regular list data properties
+	        properties : {
+	            itemId: element + "_startButton",
+	            accessoryType: Ti.UI.LIST_ACCESSORY_TYPE_NONE
+	        }
+    	});
+	});
+
+	var sections = [];
+	fleetSection.setItems(fleetDataSet);
+	sections.push(fleetSection);
+	listView.sections = sections;
+	win1.add(listView);
+}
+	/**
+	 * callback to start a fleet saving the timestamp and putting a checkmark on the row of the start page
+	 */
+	function startFleet(e){
+		var now = new Date();
+		var item = e.section.getItemAt(e.itemIndex);
+		fleet = e.itemId.charAt(0);
+		Ti.API.info('starting Fleet ' + fleet);
+		startTimes[fleet] = now;
+		if (item.properties.accessoryType == Ti.UI.LIST_ACCESSORY_TYPE_NONE) {
+            item.properties.accessoryType = Ti.UI.LIST_ACCESSORY_TYPE_CHECKMARK;
+            item.properties.color = 'gray';
+        }
+        else {
+            item.properties.accessoryType = Ti.UI.LIST_ACCESSORY_TYPE_NONE;
+        }
+        e.section.updateItemAt(e.itemIndex, item);
+	}
+
+	/**
+	 * callback to save the distance for a fleet
+	 */
+	function saveDistance(e){
+		var item = e.section.getItemAt(e.itemIndex);
+		Ti.API.info('Saving distance for ' + e.source.itemId+ " as " + e.value);
+		fleet = e.source.itemId.charAt(0);
+		distances[fleet] = e.value;
+	}
 
 /** here's the old way of doing the scratch sheet data
  * 

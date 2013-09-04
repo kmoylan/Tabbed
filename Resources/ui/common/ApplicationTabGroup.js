@@ -1,13 +1,13 @@
 function ApplicationTabGroup(Window) {
 	//create module instance
 	//var self = Ti.UI.createTabGroup();
-	
+
 	//create app tabs
 	var //win1 = new Window(L('home')),
-	win1 = new Window(L('StartPage'));
+	//win1 = new Window(L('StartPage'));
 	//win2 = makeScratchSheetView(L('ScratchSheet')); 
 	win3 = makeInitPage(L('Init Page'));
-	
+
 	var tab1 = Ti.UI.createTab({
 		title: L('StartPage'),
 		icon: '/images/KS_nav_ui.png',
@@ -37,114 +37,11 @@ function ApplicationTabGroup(Window) {
 	tabGroup.addTab(tab3);
 	tabGroup.addTab(tab1);
 
-	//lets try this with a scrollable section
-	//make the template
-	var startPageTemplate = {
-	      childTemplates: [
-	    	{
-	            type: 'Ti.UI.Label', // Use a label
-	            bindId: 'fleetName',  // Bind ID for this label
-	            properties: {        // Sets the Label.left property
-	                left: '10dp'
-	            }
-	        }, 
-	        {
-	            type: 'Ti.UI.Label', // Use a label
-	            bindId: 'fleetDistLabel',  // Bind ID for this label
-	            properties: {        // Sets the Label.left property
-	                left: '100dp'
-	            }
-	        }, 
-	        {
-	            type: 'Ti.UI.TextField', // Use a textField
-	            bindId: 'distance',  // Bind ID for this field
-	            properties: {        // Sets the field  properties
-	             	left: '180dp',
-	             	borderStyle: Ti.UI.INPUT_BORDERSTYLE_ROUNDED,
-			 	 	color: '#336699',
-	  				width: 30, height: 20,
-	            },
-	            events : { 'return' : saveDistance}
-	        },                
-	        {
-	            type: 'Ti.UI.Button',   // Use a button
-	            bindId: 'startButton',       // Bind ID for this button
-	            properties: {           // Sets several button properties
-	                width: '80dp',
-	                height: '30dp',                        	
-	                right: '10dp',
-	                title: 'Start'
-	            },
-	            events: { 'click' : startFleet }  // Binds a callback to the button's click event
-	        }
-	    ]
-	};
-	
-	var listView = Ti.UI.createListView({
-	    // Maps the plainTemplate object to the 'plain' style name
-	    templates: { 'plain': startPageTemplate },
-	    // Use the plain template, that is, the plainTemplate object defined earlier
-	    // for all data list items in this list view
-	    defaultItemTemplate: 'plain'               
-	});
+	makeInitPage();
 
-	//build the data set.  the fleets were dynamically created when we read in the boats
-	var fleetSection = Ti.UI.createListSection({ headerTitle: 'Fleet'});
-	var fleetDataSet = []; 	
-	fleets.forEach(function(element, index, array) {
-		fleetDataSet.push({
-	        // Maps to the fleet component in the template
-	        fleetName : { text: "Fleet " + element },
-	        fleetDistLabel : {text : element + " Distance"},
-	       	distance : {
-	            itemId: element + "_distance",
-	            accessoryType: Ti.UI.LIST_ACCESSORY_TYPE_NONE
-	        },
-	        // Sets the regular list data properties
-	        properties : {
-	            itemId: element + "_startButton",
-	            accessoryType: Ti.UI.LIST_ACCESSORY_TYPE_NONE
-	        }
-    	});
-	});
-	
-	var sections = [];
-	fleetSection.setItems(fleetDataSet);
-	sections.push(fleetSection);
-	listView.sections = sections;
-	win1.add(listView);
-	
 	return tabGroup; //self;
-	
-	/**
-	 * callback to start a fleet saving the timestamp and putting a checkmark on the row of the start page
-	 */
-	function startFleet(e){
-		var now = new Date();
-		var item = e.section.getItemAt(e.itemIndex);
-		fleet = e.itemId.charAt(0);
-		Ti.API.info('starting Fleet ' + fleet);
-		startTimes[fleet] = now;
-		if (item.properties.accessoryType == Ti.UI.LIST_ACCESSORY_TYPE_NONE) {
-            item.properties.accessoryType = Ti.UI.LIST_ACCESSORY_TYPE_CHECKMARK;
-            item.properties.color = 'gray';
-        }
-        else {
-            item.properties.accessoryType = Ti.UI.LIST_ACCESSORY_TYPE_NONE;
-        }
-        e.section.updateItemAt(e.itemIndex, item);
-	}
-	
-	/**
-	 * callback to save the distance for a fleet
-	 */
-	function saveDistance(e){
-		var item = e.section.getItemAt(e.itemIndex);
-		Ti.API.info('Saving distance for ' + e.source.itemId+ " as " + e.value);
-		fleet = e.source.itemId.charAt(0);
-		distances[fleet] = e.value;
-	}
-	
+
+
 };
 
 
