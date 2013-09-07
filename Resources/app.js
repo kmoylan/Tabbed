@@ -131,68 +131,65 @@ function makeInitPage(title){
 				 		var myBoat = {}; 
 				 		
 				 		col = 1;
-						if (11 == 11){
-							while (rows.length > 0){
-								row = rows.shift();
-								if (typeof row.children != 'undefined'){
-									rowData = row.children[0].data;
-									switch (col) {
-										case 1 :
-											//build a new boat, and store it's fleet
-											myBoat = {};
-											myBoat.fleet = rowData;
-										break;
-										case 2 :
-											myBoat.skipper = rowData;
-										break;
-										case 3 :
-											myBoat.name = rowData;
-										break;
-										case 4 :
-											myBoat.town = rowData;
-										break;
-										case 5 :
-											myBoat.sailNumber = rowData;
-										break;
-										case 6 :
-											myBoat.boatType = rowData;
-										break;
-										case 7 :
-											myBoat.rating = rowData;
-										break;
-										case 8 :
-											myBoat.raceRating = rowData;
-										break;
-										case 9:
-											myBoat.cruiseRating = rowData;
-										break;
-										case 10:
-											myBoat.r_c = rowData;
-										break;
-										default :
-											if (typeof myBoat.extra == 'undefined'){
-												myBoat.extra = new Array();
-											}
-											myBoat.extra.push(rowData);
-										break;
-									}
-									Ti.API.info('Data = ' +rowData);
-								} else {
-									Ti.API.info('****data = nothing');
+						while (rows.length > 0){
+							row = rows.shift();
+							if (typeof row.children != 'undefined'){
+								rowData = row.children[0].data;
+								switch (col) {
+									case 1 :
+										//build a new boat, and store it's fleet
+										myBoat = {};
+										myBoat.fleet = rowData;
+									break;
+									case 2 :
+										myBoat.skipper = rowData;
+									break;
+									case 3 :
+										myBoat.name = rowData;
+									break;
+									case 4 :
+										myBoat.town = rowData;
+									break;
+									case 5 :
+										myBoat.sailNumber = rowData;
+									break;
+									case 6 :
+										myBoat.boatType = rowData;
+									break;
+									case 7 :
+										myBoat.rating = rowData;
+									break;
+									case 8 :
+										myBoat.raceRating = rowData;
+									break;
+									case 9:
+										myBoat.cruiseRating = rowData;
+									break;
+									case 10:
+										myBoat.r_c = rowData;
+									break;
+									default :
+									//if there are more than 10 columns, just add an array of extra data
+									//might need this, who knows
+										if (typeof myBoat.extra == 'undefined'){
+											myBoat.extra = new Array();
+										}
+										myBoat.extra.push(rowData);
+									break;
 								}
-								Ti.API.info('----');
-								
-								if (col < numCol){
-									col ++;
-								} else {
-									//and add the boat to the list of boats
-									boats.push(myBoat);
-
-									col = 1;
-								}
+								//Ti.API.info('Data = ' +rowData);
+							} 
+							
+							//go to the next column, or next boat								
+							if (col < numCol){
+								col ++;
+							} else {
+								//and add the boat to the list of boats
+								boats.push(myBoat);
+								col = 1;
 							}
 						}
-
+						
 						Ti.API.info('All Boats = ' + JSON.stringify(boats));
 						var jsonOut = {};
 						jsonOut.regattaName = raceName;
