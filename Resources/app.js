@@ -70,7 +70,7 @@ function makeInitPage(title){
 	});
 	buttonLoadScratch.addEventListener('click', function() {
 		c = Titanium.Network.createHTTPClient();
-		url = 'http://www.regattaman.com/scratch.php?yr=2013&race_id=' + raceId + '&cancel_dest=def_event_page.php';
+		url = 'http://www.regattaman.com/scratch.php?yr=2013&race_id=' + raceId;
 		Ti.API.info('url = ' + url);
 
 	    c.open('GET', url);
@@ -118,55 +118,81 @@ function makeInitPage(title){
 							alert('src: ' + img.attribs.src);
 						});
 						*/
+						//get the th elements, that'll tell us how many columns there are
+						//there are two <th> elements, one for the row, one for the sorter link
+						var columns = select(dom, 'th');
+						numCol = columns.length/2;
+						Ti.API.info('Found ' + numCol + ' columns');
+						
 				 		//get all the TDs into an array
 						var rows = select(dom, 'td');
-				 		var i = 0;
+						var i = 0;
 				 		var boats = new Array();
 				 		var myBoat = {}; 
-						rows.forEach(function(row) {
-							rowData = row.children[0].data;
-
-							//Ti.API.info(i + ' ' + rowData);
-							//build a boat, then push it to the boats array
-							if (0 == i%10){
-								//build a new boat, and store it's fleet
-								myBoat = {};
-								myBoat.fleet = rowData;
-							} else {
-								//add the rest of the stuff to the boat
-								iString = i.toString();
-								if (endsWith(iString, '1')){
-									myBoat.skipper = rowData;
+				 		
+				 		col = 1;
+						if (11 == 11){
+							while (rows.length > 0){
+								row = rows.shift();
+								if (typeof row.children != 'undefined'){
+									rowData = row.children[0].data;
+									switch (col) {
+										case 1 :
+											//build a new boat, and store it's fleet
+											myBoat = {};
+											myBoat.fleet = rowData;
+										break;
+										case 2 :
+											myBoat.skipper = rowData;
+										break;
+										case 3 :
+											myBoat.name = rowData;
+										break;
+										case 4 :
+											myBoat.town = rowData;
+										break;
+										case 5 :
+											myBoat.sailNumber = rowData;
+										break;
+										case 6 :
+											myBoat.boatType = rowData;
+										break;
+										case 7 :
+											myBoat.rating = rowData;
+										break;
+										case 8 :
+											myBoat.raceRating = rowData;
+										break;
+										case 9:
+											myBoat.cruiseRating = rowData;
+										break;
+										case 10:
+											myBoat.r_c = rowData;
+										break;
+										default :
+											if (typeof myBoat.extra == 'undefined'){
+												myBoat.extra = new Array();
+											}
+											myBoat.extra.push(rowData);
+										break;
+									}
+									Ti.API.info('Data = ' +rowData);
+								} else {
+									Ti.API.info('****data = nothing');
 								}
-								if (endsWith(iString, '2')){
-									myBoat.name = rowData;
-								}
-								if (endsWith(iString, '3')){
-									myBoat.town = rowData;
-								}
-								if (endsWith(iString, '4')){
-									myBoat.sailNumber = rowData;
-								}
-								if (endsWith(iString, '5')){
-									myBoat.boatType =rowData;
-								}
-								if (endsWith(iString, '6')){
-									myBoat.rating =rowData;
-								}
-								if (endsWith(iString, '7')){
-									myBoat.raceRating =rowData;
-								}
-								if (endsWith(iString, '8')){
-									myBoat.cruiseRating = rowData;
-								}
-								if (endsWith(iString, '9')){
-									myBoat.r_c =rowData;
+								Ti.API.info('----');
+								
+								if (col < numCol){
+									col ++;
+								} else {
 									//and add the boat to the list of boats
 									boats.push(myBoat);
+
+									col = 1;
 								}
 							}
-							i++;
-						});
+						}
+
 						Ti.API.info('All Boats = ' + JSON.stringify(boats));
 						var jsonOut = {};
 						jsonOut.regattaName = raceName;
