@@ -46,6 +46,34 @@ var win1;
 	var ApplicationTabGroup = require('ui/common/ApplicationTabGroup');
 	new ApplicationTabGroup(Window).open();
 })();
+function createScratchSheetPicker(win){
+	
+	var dir = Ti.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory);
+	var resDir = dir.getDirectoryListing();
+
+	Ti.UI.backgroundColor = 'white';
+	var win = Ti.UI.createWindow({
+	  exitOnClose: true,
+	  layout: 'vertical'
+	});
+	
+	var picker = Ti.UI.createPicker({
+	  top:250
+	});
+	
+	var data = [];
+	data.push(Ti.UI.createPickerRow({title:'Create New Scratch sheet'}));
+	resDir.forEach(function(f) {
+		if (f.indexOf('_scratchSheet.txt') != -1){
+			data.push(Ti.UI.createPickerRow({title:f}))
+		}
+	});
+
+	picker.add(data);
+	picker.selectionIndicator = true;
+	picker.setSelectedRow(0, 0, false)
+	return picker;
+}
 /**
  * what about adding the scratchSheet widget on this page once you click the button?
  * Have MakeScratchSheet return the listView instead of the window and then add the listView to this win
@@ -60,7 +88,11 @@ function makeInitPage(title){
 	var h;
 	var raceId;
 	var raceName;
-
+	var scratchPicked;
+	picker = createScratchSheetPicker(win);
+	picker.addEventListener('change',function(e) {
+    	scratchPicked = e.row;
+	});
 	var buttonLoadScratch = Ti.UI.createButton({
 		height:44,
 		width:400,
@@ -69,6 +101,26 @@ function makeInitPage(title){
 		left : 10
 	});
 	buttonLoadScratch.addEventListener('click', function() {
+		//see if we can find a scratchSheet locally...
+		if (scratchPicked.getTitle() != 'Create New Scratch sheet') {
+			//var scratchFile = Ti.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, raceName + '_'+ raceId +'_scratchSheet.txt');
+			var scratchFile = Ti.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, scratchPicked.getTitle());
+
+			Ti.API.info(scratchFile);
+			var contents = scratchFile.read();
+		}
+		if (typeof contents != 'undefined') {
+			
+			json = JSON.parse(contents.text);
+			var jsonOut = {};
+			jsonOut.regattaName = raceName;
+			jsonOut.boats = json.boats;
+			scratchListView = makeScratchSheetView(jsonOut);
+			win.add(scratchListView);
+
+			makeStartPage();
+		} else {
+		
 		c = Titanium.Network.createHTTPClient();
 		url = 'http://www.regattaman.com/scratch.php?yr=2013&race_id=' + raceId;
 		Ti.API.info('url = ' + url);
@@ -201,7 +253,7 @@ function makeInitPage(title){
 
 						makeStartPage();
 						
-						var f = Ti.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory,'testOut.txt');
+						var f = Ti.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, raceName + '_'+ raceId +'_scratchSheet.txt');
 						if(!f.write(JSON.stringify(jsonOut))) {
 							Ti.API.info("could not write string to file.");
 						}
@@ -216,9 +268,9 @@ function makeInitPage(title){
 
 			};
 		c.send();
-
+	} //end of if for fileget
 	});
-
+	
 	var raceIdField = Ti.UI.createTextField({
 	  borderStyle: Ti.UI.INPUT_BORDERSTYLE_ROUNDED,
 	  hintText: 'race Id',
@@ -254,6 +306,7 @@ function makeInitPage(title){
 	});
 
     //var dom = Titanium.XML.parseString(theHTML);
+    win.add(picker);
     win.add(buttonLoadScratch);
 	win.add(raceIdField);
 	win.add(raceIdLabel);
