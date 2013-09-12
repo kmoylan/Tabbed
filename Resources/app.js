@@ -58,7 +58,8 @@ function createScratchSheetPicker(win){
 	});
 	
 	var picker = Ti.UI.createPicker({
-	  top:250
+	  left : 10,
+	  top:110
 	});
 	
 	var data = [];
@@ -89,6 +90,7 @@ function makeInitPage(title){
 	var raceId;
 	var raceName;
 	var scratchPicked;
+	
 	picker = createScratchSheetPicker(win);
 	picker.addEventListener('change',function(e) {
     	scratchPicked = e.row;
@@ -97,7 +99,7 @@ function makeInitPage(title){
 		height:44,
 		width:400,
 		title:L('Load Scratch Sheet'),
-		top:150,
+		top:320,
 		left : 10
 	});
 	buttonLoadScratch.addEventListener('click', function() {
@@ -300,6 +302,11 @@ function makeInitPage(title){
 	    text:L('Race Name'),
 	    left: 10 ,top : 10,
 	});
+	
+	var pickLabel = Titanium.UI.createLabel({
+	    text:L('Pick a stored Scratch Sheet'),
+	    left: 10 ,top : 90,
+	});
 	raceNameField.addEventListener('change', function(data) {
 
 		raceName = data.source.value;
@@ -307,6 +314,7 @@ function makeInitPage(title){
 
     //var dom = Titanium.XML.parseString(theHTML);
     win.add(picker);
+    win.add(pickLabel);
     win.add(buttonLoadScratch);
 	win.add(raceIdField);
 	win.add(raceIdLabel);
