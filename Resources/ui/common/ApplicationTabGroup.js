@@ -14,14 +14,14 @@ function ApplicationTabGroup(Window) {
 		window: win1
 	});
 	win1.containingTab = tab1;
-	/**
+
 	var tab2 = Ti.UI.createTab({
 		title: L('ScratchSheet'),
 		icon: '/images/KS_nav_views.png',
 		window: win2
 	});
 	win2.containingTab = tab2;
-	**/
+	
 	var tab3 = Ti.UI.createTab({
 		title: L('Initialize'),
 		icon: '/images/KS_nav_views.png',
@@ -35,6 +35,7 @@ function ApplicationTabGroup(Window) {
 	//self.addTab(tab2);
 	*/
 	tabGroup.addTab(tab3);
+	tabGroup.addTab(tab2);
 	tabGroup.addTab(tab1);
 
 	makeInitPage();

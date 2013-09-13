@@ -21,6 +21,7 @@ var fleetScratchData = new Array();
 var fleets = new Array();
 var tabGroup = Ti.UI.createTabGroup();
 var win1;
+var win2;
 
 // This is a single context application with mutliple windows in a stack
 (function() {
@@ -43,6 +44,7 @@ var win1;
 		Window = require('ui/handheld/ApplicationWindow');
 	}
 	win1 = new Window(L('StartPage'));
+	win2 = new Window(L('ScratchSheet'));
 	var ApplicationTabGroup = require('ui/common/ApplicationTabGroup');
 	new ApplicationTabGroup(Window).open();
 })();
@@ -118,7 +120,7 @@ function makeInitPage(title){
 			jsonOut.regattaName = raceName;
 			jsonOut.boats = json.boats;
 			scratchListView = makeScratchSheetView(jsonOut);
-			win.add(scratchListView);
+			win2.add(scratchListView);
 
 			makeStartPage();
 		} else {
@@ -251,7 +253,7 @@ function makeInitPage(title){
 						Ti.API.info('jSon = ' + JSON.stringify(jsonOut));
 
 						scratchListView = makeScratchSheetView(jsonOut);
-						win.add(scratchListView);
+						win2.add(scratchListView);
 
 						makeStartPage();
 						
