@@ -52,12 +52,6 @@ function createScratchSheetPicker(win){
 	
 	var dir = Ti.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory);
 	var resDir = dir.getDirectoryListing();
-
-	Ti.UI.backgroundColor = 'white';
-	var win = Ti.UI.createWindow({
-	  exitOnClose: true,
-	  layout: 'vertical'
-	});
 	
 	var picker = Ti.UI.createPicker({
 	  left : 10,
@@ -97,11 +91,35 @@ function makeInitPage(title){
 	picker.addEventListener('change',function(e) {
     	scratchPicked = e.row;
 	});
+	
+	//create a delete button, so we can delete scratch sheets
+	var buttonDeleteScratch = Ti.UI.createButton({
+		height:44,
+		width:400,
+		title:L('Delete Scratch Sheet'),
+		top:400,
+		left : 10
+	});
+	buttonDeleteScratch.addEventListener('click', function() {
+		//see if we can find a scratchSheet locally...
+		if (scratchPicked.getTitle() != 'Create New Scratch sheet') {
+			var scratchFile = Ti.Filesystem.getFile(Titanium.Filesystem.resourcesDirectory, scratchPicked.getTitle());
+			scratchFile.deleteFile();
+			
+			//redraw the picker with the new list of files
+			win.remove(picker);
+			picker = createScratchSheetPicker(win);
+			picker.addEventListener('change',function(e) {
+		    	scratchPicked = e.row;
+			});
+			win.add(picker);
+		}
+	});
 	var buttonLoadScratch = Ti.UI.createButton({
 		height:44,
 		width:400,
 		title:L('Load Scratch Sheet'),
-		top:320,
+		top:330,
 		left : 10
 	});
 	buttonLoadScratch.addEventListener('click', function() {
@@ -318,6 +336,7 @@ function makeInitPage(title){
     win.add(picker);
     win.add(pickLabel);
     win.add(buttonLoadScratch);
+    win.add(buttonDeleteScratch);
 	win.add(raceIdField);
 	win.add(raceIdLabel);
 	win.add(raceNameField);

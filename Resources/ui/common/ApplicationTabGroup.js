@@ -8,35 +8,31 @@ function ApplicationTabGroup(Window) {
 	//win2 = makeScratchSheetView(L('ScratchSheet')); 
 	win3 = makeInitPage(L('Init Page'));
 
-	var tab1 = Ti.UI.createTab({
+	var startTab = Ti.UI.createTab({
 		title: L('StartPage'),
 		icon: '/images/KS_nav_ui.png',
 		window: win1
 	});
-	win1.containingTab = tab1;
+	win1.containingTab = scratchTab;
 
-	var tab2 = Ti.UI.createTab({
+	var scratchTab = Ti.UI.createTab({
 		title: L('ScratchSheet'),
 		icon: '/images/KS_nav_views.png',
 		window: win2
 	});
-	win2.containingTab = tab2;
+	win2.containingTab = scratchTab;
 	
-	var tab3 = Ti.UI.createTab({
-		title: L('Initialize'),
+	var initTab = Ti.UI.createTab({
+		title: L('Load Regatta'),
 		icon: '/images/KS_nav_views.png',
 		window: win3
 	});
-	win3.containingTab = tab3;
+	win3.containingTab = initTab;
 
-	/**
-	self.addTab(tab3);	
-	self.addTab(tab1);
-	//self.addTab(tab2);
-	*/
-	tabGroup.addTab(tab3);
-	tabGroup.addTab(tab2);
-	tabGroup.addTab(tab1);
+	tabGroup.addTab(initTab);
+	tabGroup.addTab(startTab);
+	tabGroup.addTab(scratchTab);
+
 
 	makeInitPage();
 
