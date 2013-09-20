@@ -587,7 +587,8 @@ function makeScratchSheetView(json){
 
 
 	var allFleetDataSet = [];
-
+	fleets = new Array();
+	
 	json.boats.forEach(function(element, index, array) {
 		//create the fleets array so we know how many fleets are in the regatta
 		//this will be used to make sections on the finish page, and to make the start page
